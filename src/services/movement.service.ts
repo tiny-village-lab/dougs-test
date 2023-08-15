@@ -14,6 +14,9 @@ export class MovementService
      */
     public static validateMovements(movements: Array<Movement>, checkpoints: Array<Balance>): void
     {
+        // The reasons to return
+        let errorReasons: Array<Reason> = [];
+
         if (movements.length == 0) {
             return;
         }
@@ -21,8 +24,17 @@ export class MovementService
         let sortedMovements: Array<Movement> = MovementService.sortMovementsByDate(movements); 
         let sortedCheckpoints: Array<Balance> = MovementService.sortBalancesByDate(checkpoints);
 
+        // The checkpoint to start with is post the date of the first movement to verify
         if (sortedCheckpoints.at(0)!.date >= sortedMovements.at(0)!.date) {
-           throw new MovementValidationError([Reason.balanceStartInvalid()]);
+            errorReasons.push(Reason.balanceStartInvalid());
+        }
+
+        // The last checkpoint is prior to the last movement date. 
+        if (sortedCheckpoints.at(-1)!.date < sortedMovements.at(-1)!.date) {
+        }
+
+        if (errorReasons.length) {
+            throw new MovementValidationError(errorReasons);
         }
     }
 

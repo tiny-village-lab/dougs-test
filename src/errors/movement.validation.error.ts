@@ -7,9 +7,14 @@ export class MovementValidationError extends Error
 {
 
     constructor(
-        public message: string,
         public reasons: Array<Reason>
     ) {
+        let message = "";
+
+        reasons.forEach((reason: Reason) => {
+            message = `[${reason.name}] : ${reason.text}; ${message}`;  
+        });
+
         super(message); 
 
         Object.setPrototypeOf(this, MovementValidationError.prototype);

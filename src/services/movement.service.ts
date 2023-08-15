@@ -31,6 +31,7 @@ export class MovementService
 
         // The last checkpoint is prior to the last movement date. 
         if (sortedCheckpoints.at(-1)!.date < sortedMovements.at(-1)!.date) {
+            errorReasons.push(Reason.balanceEndInvalid());
         }
 
         if (errorReasons.length) {

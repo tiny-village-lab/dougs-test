@@ -44,26 +44,39 @@ export class MovementService
         // Finally, test if there is any reason to throw an error
         if (errorReasons.length) {
             const error = new MovementValidationError(errorReasons);
-            error.movements = movements;
-            error.checkpoints = checkpoints;
 
             throw error;
         }
 
         // At this point, given data has been validated, 
         // now we can check data integrity
-        
-        let balance: number = sortedCheckpoints.at(0)!.balance;
 
-        movements.forEach((movement: Movement) => {
-            balance += movement.amount;
-        });
+        for (let i=0; i<sortedCheckpoints.length-1; i++) {
+            const initialBalance: Balance = sortedCheckpoints.at(i)!;
+            const expectedBalance: Balance = sortedCheckpoints.at(i+1)!;
 
-        if (balance !== sortedCheckpoints.at(-1)!.balance) {
-            const error = new MovementValidationError([Reason.balanceIsNotMatching()]);
-            error.movements = movements;
-            error.checkpoints = checkpoints;
+            // We take the movements that are in the date range
+            const movementsInPeriod: Array<Movement> = sortedMovements.filter(movement => 
+                movement.date >= initialBalance.date && movement.date <= expectedBalance.date
+            );
 
+            // We verify a period, and put aside a reason if something goes wrong
+            if (MovementService.verifyOnePeriod(
+                movementsInPeriod,
+                initialBalance,
+                expectedBalance
+            ) === false) {
+                const reason: Reason = Reason.balanceIsNotMatching();
+                reason.movements = movementsInPeriod;
+                reason.checkpoints = [initialBalance, expectedBalance];
+
+                errorReasons.push(Reason.balanceIsNotMatching());
+            }
+        }
+
+        // If some verifications gone wrong, we throw an error
+        if (errorReasons.length) {
+            const error = new MovementValidationError(errorReasons);
             throw error;
         }
     }
@@ -106,5 +119,22 @@ export class MovementService
         return uniqueIds.length !== movements.length;
     }
 
+    private static verifyOnePeriod(
+        movements: Array<Movement>,
+        initialBalance: Balance,
+        expectedBalance: Balance
+    ): boolean {
+        let balance: number = initialBalance.balance;
+
+        movements.forEach((movement: Movement) => {
+            balance += movement.amount;
+        });
+
+        if (balance === expectedBalance.balance) {
+            return true;
+        }
+
+        return false;
+    }
 
 }

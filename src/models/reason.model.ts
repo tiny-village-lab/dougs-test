@@ -6,6 +6,9 @@ import { Balance } from "models/balance.model";
  */
 export class Reason
 {
+
+    movements?: Array<Movement>;
+    checkpoints?: Array<Balance>;
     
     constructor(
 

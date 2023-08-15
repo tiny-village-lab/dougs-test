@@ -109,4 +109,28 @@ describe("Testing MovementService", () => {
             MovementService.validateMovements(movements, balances);
         }).not.toThrow('balance-not-matching')
     });
+
+    /**
+     * No error, verification is done
+     */
+    test("balances match on bigger ranges, nothing happens", () => {
+        let movements: Array<Movement> = [
+           new Movement(1, new Date(2023, 7, 3), "received transfer", 200.00), 
+           new Movement(2, new Date(2023, 7, 14), "received transfer", 100.00), 
+           new Movement(3, new Date(2023, 8, 22), "paid bill", -200.00),
+           new Movement(4, new Date(2023, 8, 24), "paid bill", -100.00),
+           new Movement(4, new Date(2023, 9, 4), "transfer", 300.00),
+        ];
+
+        let balances: Array<Balance> = [
+            new Balance(new Date(2023, 6, 30), 250.00),
+            new Balance(new Date(2023, 7, 31), 550.00),
+            new Balance(new Date(2023, 8, 31), 250.00),
+            new Balance(new Date(2023, 9, 30), 550.00),
+        ];
+
+        expect(() => {
+            MovementService.validateMovements(movements, balances);
+        }).not.toThrow('balance-not-matching')
+    });
 });

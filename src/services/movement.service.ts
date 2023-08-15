@@ -12,8 +12,10 @@ export class MovementService
     /**
      * Throw an error if we detect an anomaly in the movements
      */
-    public static validateMovements(movements: Array<Movement>, checkpoints: Array<Balance>): void
-    {
+    public static validateMovements(
+        movements: Array<Movement>,
+        checkpoints: Array<Balance>
+    ): void {
         // The reasons to return
         let errorReasons: Array<Reason> = [];
 
@@ -34,8 +36,35 @@ export class MovementService
             errorReasons.push(Reason.balanceEndInvalid());
         }
 
+        // The list of movements contains duplicated ids, it is worth checking it
+        if (MovementService.containsDuplicateIds(movements)) {
+            errorReasons.push(Reason.movementIdDuplicate());
+        }
+
+        // Finally, test if there is any reason to throw an error
         if (errorReasons.length) {
-            throw new MovementValidationError(errorReasons);
+            const error = new MovementValidationError(errorReasons);
+            error.movements = movements;
+            error.checkpoints = checkpoints;
+
+            throw error;
+        }
+
+        // At this point, given data has been validated, 
+        // now we can check data integrity
+        
+        let balance: number = sortedCheckpoints.at(0)!.balance;
+
+        movements.forEach((movement: Movement) => {
+            balance += movement.amount;
+        });
+
+        if (balance !== sortedCheckpoints.at(-1)!.balance) {
+            const error = new MovementValidationError([Reason.balanceIsNotMatching()]);
+            error.movements = movements;
+            error.checkpoints = checkpoints;
+
+            throw error;
         }
     }
 
@@ -58,4 +87,24 @@ export class MovementService
             (balanceA, balanceB) => balanceA.date.getTime() - balanceB.date.getTime()
         );
     }
+
+    /**
+     * Return true if the list of given movements contain records
+     * that have the same id
+     */
+    private static containsDuplicateIds(movements: Array<Movement>): boolean {
+        let uniqueIds: Array<number> = [];
+
+        movements.forEach(movement => {
+            const existsAlready: boolean = uniqueIds.includes(movement.id);
+
+            if (! existsAlready) {
+                uniqueIds.push(movement.id);
+            }
+        });
+
+        return uniqueIds.length !== movements.length;
+    }
+
+
 }

@@ -1,3 +1,6 @@
+import { Movement } from "models/movement.model";
+import { Balance } from "models/balance.model";
+
 /**
  * Used when an error is throw, to give a functional focus feedback
  */
@@ -33,7 +36,30 @@ export class Reason
     static balanceEndInvalid(): Reason {
         return new Reason(
             'balance-end-invalid',
-            "We couldn't find a balance that could help to verify the last movements"
+            "We couldn't find a target balance to make the verification on the given period. A balance at the date of the last movement is necessary."
         );
     }
+
+    /**
+     * When the given list of movements contains
+     * duplicate records (records that have the same id)
+     */
+    static movementIdDuplicate(): Reason {
+        return new Reason(
+            'movement-id-duplicate', 
+            "We couldn't find a target balance to make the verification on the given period. A balance at the date of the last movement is necessary." 
+        );
+    }
+
+    /*
+     * When we don't find the expected balance after applying movements to 
+     * the initial balance
+     */
+    static balanceIsNotMatching(): Reason {
+        return new Reason(
+            'balance-not-matching',
+            "Something went wrong while trying to find the expected balance."
+        );
+    }
+
 }

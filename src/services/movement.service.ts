@@ -1,7 +1,7 @@
-import { Movement } from "models/movement.model";
-import { Balance } from "models/balance.model";
-import { Reason } from "models/reason.model";
-import { MovementValidationError } from "errors/movement.validation.error";
+import { Movement } from "../models/movement.model";
+import { Balance } from "../models/balance.model";
+import { Reason } from "../models/reason.model";
+import { MovementValidationError } from "../errors/movement.validation.error";
 
 /**
  * A service class that helps to deal with bank movements

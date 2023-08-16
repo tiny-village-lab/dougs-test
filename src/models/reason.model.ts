@@ -1,5 +1,5 @@
-import { Movement } from "models/movement.model";
-import { Balance } from "models/balance.model";
+import { Movement } from "./movement.model";
+import { Balance } from "./balance.model";
 
 /**
  * Used when an error is throw, to give a functional focus feedback

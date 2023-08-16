@@ -1,4 +1,4 @@
-import { Reason } from "models/reason.model";
+import { Reason } from "../models/reason.model";
 
 /**
  * An error class for movements validation

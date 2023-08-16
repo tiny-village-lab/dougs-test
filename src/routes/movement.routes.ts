@@ -1,6 +1,6 @@
-import { Movement } from "models/movement.model";
-import { Balance } from "models/balance.model";
-import { MovementService } from "services/movement.service";
+import { Movement } from "../models/movement.model";
+import { Balance } from "../models/balance.model";
+import { MovementService } from "../services/movement.service";
 
 import { Router, Request, Response } from "express";
 

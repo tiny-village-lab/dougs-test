@@ -51,11 +51,25 @@ export class MovementService
         // At this point, given data has been validated, 
         // now we can check data integrity
 
+        /**
+         * We take balances two by two, so we have the balance 
+         * to start with, and the balance to match. 
+         * 
+         * Then we take all movements that happen between those 
+         * two balances, and we apply the movements to the first 
+         * balance. 
+         *
+         * At the end, we should find the same amount.
+         */
         for (let i=0; i<sortedCheckpoints.length-1; i++) {
+
+            // We select the balance to start with
             const initialBalance: Balance = sortedCheckpoints.at(i)!;
+
+            // We select the balance we need to match 
             const expectedBalance: Balance = sortedCheckpoints.at(i+1)!;
 
-            // We take the movements that are in the date range
+            // We take the movements that are in the date range of the two selected balances
             const movementsInPeriod: Array<Movement> = sortedMovements.filter(movement => 
                 movement.date >= initialBalance.date && movement.date <= expectedBalance.date
             );
@@ -119,6 +133,10 @@ export class MovementService
         return uniqueIds.length !== movements.length;
     }
 
+    /**
+     * Verify between one initial balance and an expected
+     * balance.
+     */ 
     private static verifyOnePeriod(
         movements: Array<Movement>,
         initialBalance: Balance,
